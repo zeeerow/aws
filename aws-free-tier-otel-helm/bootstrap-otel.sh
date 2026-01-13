@@ -294,7 +294,7 @@ resource "helm_release" "otel_demo" {
     file("${path.module}/helm-values/opentelemetry-demo-values.yaml")
   ]
 
-  timeout = 600
+  timeout = 1200
   depends_on = [
     module.eks,
     aws_eks_addon.vpc_cni,
@@ -362,7 +362,7 @@ public_subnets  = ["10.20.0.0/24", "10.20.1.0/24", "10.20.2.0/24"]
 private_subnets = ["10.20.10.0/24", "10.20.11.0/24", "10.20.12.0/24"]
 
 ng_general_instance_types = ["t3.small"]
-ng_general_desired        = 2
+ng_general_desired        = 4
 ng_general_min            = 2
 ng_general_max            = 4
 
