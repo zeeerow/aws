@@ -312,9 +312,15 @@ data "kubernetes_service_v1" "frontendproxy" {
 }
 
 locals {
-  frontendproxy_hostname = try(
-    data.kubernetes_service_v1.frontendproxy.status[0].load_balancer[0].ingress[0].hostname,
-    data.kubernetes_service_v1.frontendproxy.status[0].load_balancer[0].ingress[0].hostname
+  frontendproxy_hostname = coalesce(
+    # Try the Hostname (Standard for AWS ELB/ALB)
+    try(data.kubernetes_service_v1.frontendproxy.status[0].load_balancer[0].ingress[0].hostname, null),
+    
+    # Try the IP (Standard for Azure/GCP or MetalLB)
+    try(data.kubernetes_service_v1.frontendproxy.status[0].load_balancer[0].ingress[0].ip, null),
+    
+    # Real Fallback: Internal K8s DNS (works even before the LB is ready)
+    "frontendproxy.default.svc.cluster.local"
   )
 }
 EOF
