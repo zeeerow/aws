@@ -315,7 +315,6 @@ data "kubernetes_service_v1" "frontendproxy" {
     name      = "${helm_release.otel_demo.name}-frontendproxy"
     namespace = helm_release.otel_demo.namespace
   }
-  wait_for_load_balancer = true
   depends_on = [time_sleep.wait_lb]
 }
 
