@@ -303,12 +303,20 @@ resource "helm_release" "otel_demo" {
   ]
 }
 
+# Add a wait time resource
+resource "time_sleep" "wait_lb" {
+  create_duration = "60s"
+  depends_on      = [helm_release.otel_demo]
+}
+
 # Grab the LoadBalancer hostname created for the Frontend Proxy
 data "kubernetes_service_v1" "frontendproxy" {
   metadata {
     name      = "${helm_release.otel_demo.name}-frontendproxy"
     namespace = helm_release.otel_demo.namespace
   }
+  wait_for_load_balancer = true
+  depends_on = [time_sleep.wait_lb]
 }
 
 locals {
